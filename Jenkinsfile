@@ -27,10 +27,10 @@ pipeline {
 		stage('Stop & Remove Old Container') {
 			steps {
 				sh """
-					if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+					OLD=\$(docker ps -aq -f name=${CONTAINER_NAME})
+					if [ "\$OLD" ]; then
 						echo "Stopping container ${CONTAINER_NAME}"
-						docker stop ${CONTAINER_NAME}
-						docker rm ${CONTAINER_NAME}
+						docker rm -f \$OLD
 					else
 						echo "No pre-existing container"
 					fi
