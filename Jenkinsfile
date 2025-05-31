@@ -1,5 +1,8 @@
 pipeline {
 	agent any
+	tools{
+		Docker: 'docker'
+	}
 	environment{
 		IMAGE_NAME = "go-api"
 		CONTAINER_NAME = "api-container"
