@@ -1,0 +1,16 @@
+Install goose
+go install github.com/pressly/goose/v3/cmd/goose@latest
+~/.bashrc add to PATH
+export PATH=$PATH:$HOME/go/bin
+
+# migrate to latest go to sql/schema dir
+goose postgres postgres://postgres:postgres@localhost:5432/site up
+
+Install sqlc
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+~/.bashrc add to PATH
+export PATH="$PATH:$HOME/go/bin"
+
+#root dir generate queries
+sqlc init creates default yaml db/schema, db/query
+sqlc generate
