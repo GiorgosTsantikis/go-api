@@ -1,3 +1,5 @@
+repo: https://github.com/GiorgosTsantikis/go-api.git
+
 Install goose
 go install github.com/pressly/goose/v3/cmd/goose@latest
 ~/.bashrc add to PATH
@@ -14,3 +16,9 @@ export PATH="$PATH:$HOME/go/bin"
 #root dir generate queries
 sqlc init creates default yaml db/schema, db/query
 sqlc generate
+
+Start db container
+sudo docker start postgres
+
+Connect to db container
+psql -h localhost -U postgres -d site -p 5432
