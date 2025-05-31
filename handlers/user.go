@@ -17,20 +17,22 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 	return &UserHandler{UserService: userService}
 }
 
-//url length/method ? eg POST /profile GET profile/abc GET friends
+// url length/method ? eg POST /profile GET profile/abc GET friends
 func (u *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Printf("path %v ", path)
 	if r.Method == "GET" {
-		switch path[len(path)-2] {
-		case "profile":
-			u.getUserProfile(w, r)
-		case "/friends":
-
-		default:
-			http.NotFound(w, r)
+		if len(path) == 3 {
+			w.WriteHeader(http.StatusOK)
+			return
+		} else if len(path) == 4 {
+			if path[2] == "profile" {
+				u.getUserProfile(w, r)
+				return
+			}
 		}
+		http.NotFound(w, r)
 	} else if r.Method == "POST" {
 		switch path[len(path)-1] {
 		case "signup":
