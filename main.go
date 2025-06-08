@@ -33,10 +33,12 @@ func main() {
 	db := database.New(conn)
 
 	mux := http.NewServeMux()
+	userService := service.NewUserService(db)
+	middleware := auth.NewMiddleware(userService)
 
-	userHandler := handlers.NewUserHandler(service.NewUserService(db))
-	mux.HandleFunc("GET /user/profile/{email}", auth.WithCORS(userHandler.GetUserProfile))
-	mux.HandleFunc("GET /user/{email}", auth.WithCORS(userHandler.UserExistsByEmail))
+	userHandler := handlers.NewUserHandler(userService)
+	mux.HandleFunc("GET /user/profile/{email}", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.GetUserProfile)))
+	mux.HandleFunc("GET /user/{email}", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.UserExistsByEmail)))
 
 	adminHandler := handlers.NewAdminHandler(service.NewAdminService(db))
 	mux.HandleFunc("GET /admin/users", adminHandler.GetUsers)

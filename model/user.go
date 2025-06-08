@@ -1,6 +1,8 @@
 package model
 
 type User struct {
-	Username   string
-	ProfilePic string
+	Username string
+	Email    string
+	UserId   string
+	Pic      string
 }

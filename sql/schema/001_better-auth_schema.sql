@@ -9,7 +9,7 @@ create table "account" ("id" text not null primary key, "accountId" text not nul
 create table "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" timestamp not null, "createdAt" timestamp, "updatedAt" timestamp);
 
 -- +goose Down
-DROP TABLE "user";
-DROP TABLE "session";
-DROP TABLE "account";
 DROP TABLE "verification";
+DROP TABLE "account";
+DROP TABLE "session";
+DROP TABLE "user";

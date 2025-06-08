@@ -62,3 +62,23 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	)
 	return i, err
 }
+
+const getUserBySession = `-- name: GetUserBySession :one
+SELECT u.id, u.name, u.email, u."emailVerified", u.image, u."createdAt", u."updatedAt" FROM "user" u JOIN "session" s ON
+    u.id = s."userId" WHERE s.token = $1
+`
+
+func (q *Queries) GetUserBySession(ctx context.Context, token string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserBySession, token)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.EmailVerified,
+		&i.Image,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

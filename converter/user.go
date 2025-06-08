@@ -13,7 +13,9 @@ func UserEntityToUserModel(user *database.User) *model.User {
 		pic = a.String
 	}
 	return &model.User{
-		Username:   user.Name,
-		ProfilePic: pic,
+		Username: user.Name,
+		Email:    user.Email,
+		Pic:      pic,
+		UserId:   user.ID,
 	}
 }

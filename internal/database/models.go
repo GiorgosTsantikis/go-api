@@ -79,6 +79,13 @@ type Friendship struct {
 	RequestStatus FriendRequestStatus
 }
 
+type Jwk struct {
+	ID         string
+	PublicKey  string
+	PrivateKey string
+	CreatedAt  time.Time
+}
+
 type Session struct {
 	ID        string
 	ExpiresAt time.Time
