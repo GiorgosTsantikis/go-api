@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/handlers"
+	"api/internal/auth"
 	"api/internal/database"
 	"api/service"
 	"database/sql"
@@ -32,8 +33,13 @@ func main() {
 	db := database.New(conn)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", &handlers.HomeHandler{})
-	mux.Handle("/user/", handlers.NewUserHandler(service.NewUserService(db)))
+
+	userHandler := handlers.NewUserHandler(service.NewUserService(db))
+	mux.HandleFunc("GET /user/profile/{email}", auth.WithCORS(userHandler.GetUserProfile))
+	mux.HandleFunc("GET /user/{email}", auth.WithCORS(userHandler.UserExistsByEmail))
+
+	adminHandler := handlers.NewAdminHandler(service.NewAdminService(db))
+	mux.HandleFunc("GET /admin/users", adminHandler.GetUsers)
 	fmt.Println("Listening on port ", os.Getenv("PORT"))
 
 	err = http.ListenAndServe(":"+os.Getenv("PORT"), mux)

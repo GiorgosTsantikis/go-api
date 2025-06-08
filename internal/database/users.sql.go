@@ -7,37 +7,58 @@ package database
 
 import (
 	"context"
-	"database/sql"
-
-	"github.com/google/uuid"
 )
 
-const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, username, profilePic)
-VALUES ($1, $2, $3)
-RETURNING id, username, profilepic
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt" FROM "user"
 `
 
-type CreateUserParams struct {
-	ID         uuid.UUID
-	Username   string
-	Profilepic sql.NullString
+func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.EmailVerified,
+			&i.Image,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.Username, arg.Profilepic)
-	var i User
-	err := row.Scan(&i.ID, &i.Username, &i.Profilepic)
-	return i, err
-}
-
-const getUserByUserName = `-- name: GetUserByUserName :one
-SELECT id, username, profilepic FROM users WHERE username=$1
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt" FROM "user" WHERE email=$1
 `
 
-func (q *Queries) GetUserByUserName(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByUserName, username)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
-	err := row.Scan(&i.ID, &i.Username, &i.Profilepic)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.EmailVerified,
+		&i.Image,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }

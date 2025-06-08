@@ -7,13 +7,13 @@ import (
 
 // perfomante maxim
 func UserEntityToUserModel(user *database.User) *model.User {
-	a := user.Profilepic
+	a := user.Image
 	pic := ""
 	if a.Valid {
 		pic = a.String
 	}
 	return &model.User{
-		Username:   user.Username,
+		Username:   user.Name,
 		ProfilePic: pic,
 	}
 }

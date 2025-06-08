@@ -1,7 +1,5 @@
--- name: CreateUser :one
-INSERT INTO users (id, username, profilePic)
-VALUES ($1, $2, $3)
-RETURNING *;
+-- name: GetUserByEmail :one
+SELECT * FROM "user" WHERE email=$1;
 
--- name: GetUserByUserName :one
-SELECT * FROM users WHERE username=$1;
+-- name: GetAllUsers :many
+SELECT * FROM "user";

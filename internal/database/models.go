@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -55,22 +56,55 @@ func (ns NullFriendRequestStatus) Value() (driver.Value, error) {
 	return string(ns.FriendRequestStatus), nil
 }
 
-type Credential struct {
-	ID       uuid.UUID
-	Username string
-	Email    string
-	Password string
+type Account struct {
+	ID                    string
+	AccountId             string
+	ProviderId            string
+	UserId                string
+	AccessToken           sql.NullString
+	RefreshToken          sql.NullString
+	IdToken               sql.NullString
+	AccessTokenExpiresAt  sql.NullTime
+	RefreshTokenExpiresAt sql.NullTime
+	Scope                 sql.NullString
+	Password              sql.NullString
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }
 
 type Friendship struct {
 	ID            uuid.UUID
-	UserID        uuid.UUID
-	FriendID      uuid.NullUUID
+	UserID        string
+	FriendID      string
 	RequestStatus FriendRequestStatus
 }
 
+type Session struct {
+	ID        string
+	ExpiresAt time.Time
+	Token     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	IpAddress sql.NullString
+	UserAgent sql.NullString
+	UserId    string
+}
+
 type User struct {
-	ID         uuid.UUID
-	Username   string
-	Profilepic sql.NullString
+	ID            string
+	Name          string
+	Email         string
+	EmailVerified bool
+	Image         sql.NullString
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}
+
+type Verification struct {
+	ID         string
+	Identifier string
+	Value      string
+	ExpiresAt  time.Time
+	CreatedAt  sql.NullTime
+	UpdatedAt  sql.NullTime
 }

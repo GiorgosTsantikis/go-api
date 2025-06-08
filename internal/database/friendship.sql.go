@@ -7,16 +7,14 @@ package database
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 const getFriends = `-- name: GetFriends :many
-SELECT u.id, u.username, u.profilepic FROM users u JOIN friendship f ON u.id = f.user_id
+SELECT u.id, u.name, u.email, u."emailVerified", u.image, u."createdAt", u."updatedAt" FROM "user" u JOIN friendship f ON u.id = f.user_id
 WHERE u.id = $1
 `
 
-func (q *Queries) GetFriends(ctx context.Context, id uuid.UUID) ([]User, error) {
+func (q *Queries) GetFriends(ctx context.Context, id string) ([]User, error) {
 	rows, err := q.db.QueryContext(ctx, getFriends, id)
 	if err != nil {
 		return nil, err
@@ -25,7 +23,15 @@ func (q *Queries) GetFriends(ctx context.Context, id uuid.UUID) ([]User, error) 
 	var items []User
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Username, &i.Profilepic); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.EmailVerified,
+			&i.Image,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
