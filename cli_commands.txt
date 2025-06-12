@@ -6,7 +6,8 @@ go install github.com/pressly/goose/v3/cmd/goose@latest
 export PATH=$PATH:$HOME/go/bin
 
 # migrate to latest go to sql/schema dir
-goose postgres postgres://postgres:postgres@localhost:5432/qrtable up
+local --> goose postgres postgres://postgres:postgres@localhost:5432/qrtable up
+vm --> goose postgres postgres://admin:12345678@104.199.21.15:5432/qtable up
 
 Install sqlc
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
@@ -21,4 +22,5 @@ Start db container
 sudo docker start postgres
 
 Connect to db container
-psql -h localhost -U postgres -d site -p 5432
+local-->psql -h localhost -U postgres -d site -p 5432
+vm--> psql -h 104.199.21.15 -U admin -d qtable -p 5432
