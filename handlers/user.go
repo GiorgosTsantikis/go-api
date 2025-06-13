@@ -3,8 +3,8 @@ package handlers
 import (
 	"api/service"
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"strings"
 )
 
 type UserHandler interface {
@@ -25,18 +25,25 @@ func (u *userHandler) UserExistsByEmail(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusOK)
 }
 
-// user/profile/{email}
+// user/profile
 func (u *userHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")
-	if len(path) < 4 || path[len(path)-1] == "" {
-		http.Error(w, "Email not provided", http.StatusBadRequest)
-		return
-	}
-	email := path[len(path)-1]
-	model, err := u.UserService.GetUserByEmail(email)
+	userIdVal := r.Context().Value("user-id")
+	userId := userIdVal.(string)
+
+	fmt.Printf("UserHandler.GetUserProfile id:%v \n", userId)
+
+	user, err := u.UserService.GetUserByID(userId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("User with " + userId + " was not found"))
 		return
 	}
-	json.NewEncoder(w).Encode(model)
+
+	w.Header().Set("Content-Type", "application/json")
+	encodingError := json.NewEncoder(w).Encode(user)
+	if encodingError != nil {
+		fmt.Println("Failed to encode user object")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }

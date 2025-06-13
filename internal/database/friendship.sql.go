@@ -10,7 +10,7 @@ import (
 )
 
 const getFriends = `-- name: GetFriends :many
-SELECT u.id, u.name, u.email, u."emailVerified", u.image, u."createdAt", u."updatedAt" FROM "user" u JOIN friendship f ON u.id = f.user_id
+SELECT u.id, u.name, u.email, u."emailVerified", u.image, u."createdAt", u."updatedAt", u.role, u.banned, u."banReason", u."banExpires", u."phoneNumber", u."phoneNumberVerified" FROM "user" u JOIN friendship f ON u.id = f.user_id
 WHERE u.id = $1
 `
 
@@ -31,6 +31,12 @@ func (q *Queries) GetFriends(ctx context.Context, id string) ([]User, error) {
 			&i.Image,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Role,
+			&i.Banned,
+			&i.BanReason,
+			&i.BanExpires,
+			&i.PhoneNumber,
+			&i.PhoneNumberVerified,
 		); err != nil {
 			return nil, err
 		}

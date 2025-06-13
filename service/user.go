@@ -9,26 +9,16 @@ import (
 )
 
 type UserService interface {
-	GetUserByEmail(email string) (*model.User, error)
-	GetUserByCookie(sessionToken string) (*model.User, error)
+	GetUserByID(id string) (*model.User, error)
 }
 
 type userService struct { /*dependencies*/
 	DB *database.Queries
 }
 
-func (u *userService) GetUserByEmail(email string) (*model.User, error) {
-	fmt.Printf("UserService.GetUserByEmail %v", email)
-	val, err := u.DB.GetUserByEmail(context.Background(), email)
-	if err != nil {
-		return nil, err
-	}
-	return converter.UserEntityToUserModel(&val), nil
-}
-
-func (u *userService) GetUserByCookie(sessionToken string) (*model.User, error) {
-	fmt.Printf("UserService.GetUserByCookie %v", sessionToken)
-	user, err := u.DB.GetUserBySession(context.Background(), sessionToken)
+func (u *userService) GetUserByID(id string) (*model.User, error) {
+	fmt.Printf("UserService.GetUserByID %v", id)
+	user, err := u.DB.GetUserByID(context.Background(), id)
 	if err != nil {
 		return nil, err
 	}

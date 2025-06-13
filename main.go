@@ -37,11 +37,11 @@ func main() {
 	middleware := auth.NewMiddleware(userService)
 
 	userHandler := handlers.NewUserHandler(userService)
-	mux.HandleFunc("GET /user/profile/{email}", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.GetUserProfile)))
-	mux.HandleFunc("GET /user/{email}", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.UserExistsByEmail)))
+	mux.HandleFunc("/user/profile", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.GetUserProfile)))
+	//mux.HandleFunc("GET /user/{email}", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.UserExistsByEmail)))
 
 	adminHandler := handlers.NewAdminHandler(service.NewAdminService(db))
-	mux.HandleFunc("GET /admin/users", adminHandler.GetUsers)
+	mux.HandleFunc("/admin/users", adminHandler.GetUsers)
 	fmt.Println("Listening on port ", os.Getenv("PORT"))
 
 	err = http.ListenAndServe(":"+os.Getenv("PORT"), mux)

@@ -87,24 +87,31 @@ type Jwk struct {
 }
 
 type Session struct {
-	ID        string
-	ExpiresAt time.Time
-	Token     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	IpAddress sql.NullString
-	UserAgent sql.NullString
-	UserId    string
+	ID             string
+	ExpiresAt      time.Time
+	Token          string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	IpAddress      sql.NullString
+	UserAgent      sql.NullString
+	UserId         string
+	ImpersonatedBy sql.NullString
 }
 
 type User struct {
-	ID            string
-	Name          string
-	Email         string
-	EmailVerified bool
-	Image         sql.NullString
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID                  string
+	Name                string
+	Email               string
+	EmailVerified       bool
+	Image               sql.NullString
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+	Role                sql.NullString
+	Banned              sql.NullBool
+	BanReason           sql.NullString
+	BanExpires          sql.NullTime
+	PhoneNumber         sql.NullString
+	PhoneNumberVerified sql.NullBool
 }
 
 type Verification struct {
