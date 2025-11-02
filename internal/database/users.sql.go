@@ -10,7 +10,7 @@ import (
 )
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt", role, banned, "banReason", "banExpires", "phoneNumber", "phoneNumberVerified" FROM "user"
+SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt", role, banned, "banReason", "banExpires", "phoneNumber", "phoneNumberVerified", "twoFactorEnabled" FROM "user"
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -36,6 +36,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.BanExpires,
 			&i.PhoneNumber,
 			&i.PhoneNumberVerified,
+			&i.TwoFactorEnabled,
 		); err != nil {
 			return nil, err
 		}
@@ -51,7 +52,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt", role, banned, "banReason", "banExpires", "phoneNumber", "phoneNumberVerified" FROM "user" WHERE email=$1
+SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt", role, banned, "banReason", "banExpires", "phoneNumber", "phoneNumberVerified", "twoFactorEnabled" FROM "user" WHERE email=$1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -71,12 +72,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.BanExpires,
 		&i.PhoneNumber,
 		&i.PhoneNumberVerified,
+		&i.TwoFactorEnabled,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt", role, banned, "banReason", "banExpires", "phoneNumber", "phoneNumberVerified" FROM "user" WHERE id = $1
+SELECT id, name, email, "emailVerified", image, "createdAt", "updatedAt", role, banned, "banReason", "banExpires", "phoneNumber", "phoneNumberVerified", "twoFactorEnabled" FROM "user" WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
@@ -96,12 +98,13 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 		&i.BanExpires,
 		&i.PhoneNumber,
 		&i.PhoneNumberVerified,
+		&i.TwoFactorEnabled,
 	)
 	return i, err
 }
 
 const getUserBySession = `-- name: GetUserBySession :one
-SELECT u.id, u.name, u.email, u."emailVerified", u.image, u."createdAt", u."updatedAt", u.role, u.banned, u."banReason", u."banExpires", u."phoneNumber", u."phoneNumberVerified" FROM "user" u JOIN "session" s ON
+SELECT u.id, u.name, u.email, u."emailVerified", u.image, u."createdAt", u."updatedAt", u.role, u.banned, u."banReason", u."banExpires", u."phoneNumber", u."phoneNumberVerified", u."twoFactorEnabled" FROM "user" u JOIN "session" s ON
     u.id = s."userId" WHERE s.token = $1
 `
 
@@ -122,6 +125,7 @@ func (q *Queries) GetUserBySession(ctx context.Context, token string) (User, err
 		&i.BanExpires,
 		&i.PhoneNumber,
 		&i.PhoneNumberVerified,
+		&i.TwoFactorEnabled,
 	)
 	return i, err
 }

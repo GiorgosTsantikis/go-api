@@ -7,11 +7,12 @@ import (
 	"api/service"
 	"database/sql"
 	"fmt"
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -34,13 +35,22 @@ func main() {
 
 	mux := http.NewServeMux()
 	userService := service.NewUserService(db)
-	middleware := auth.NewMiddleware(userService)
+	storeService := service.NewStoreService(db, conn)
+	middleware := auth.NewMiddleware()
 
 	userHandler := handlers.NewUserHandler(userService)
-	mux.HandleFunc("/user/profile", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.GetUserProfile)))
-	//mux.HandleFunc("GET /user/{email}", middleware.WithCORS(middleware.AuthenticationMiddleware(userHandler.UserExistsByEmail)))
+	storeHandler := handlers.NewStoreHandler(storeService)
+
+	mux.HandleFunc("GET /user/profile", middleware.WithCORS(middleware.WithSecurityHeaders(middleware.AuthenticationMiddleware(userHandler.GetUserProfile))))
+
+	mux.HandleFunc("POST /store/is-valid-url", middleware.CleanXSS(middleware.WithSecurityHeaders(middleware.AuthenticateStoreMiddleware(middleware.WithCORS(middleware.AuthenticationMiddleware(storeHandler.IsValidURL))))))
+	mux.HandleFunc("/store/create-menu-item", middleware.WithSecurityHeaders(middleware.WithCORS(middleware.AuthenticationMiddleware(middleware.AuthenticateStoreMiddleware(storeHandler.CreateMenuItem)))))
+	mux.HandleFunc("GET /store/generate-qrcode", middleware.WithCORS(middleware.WithSecurityHeaders(middleware.AuthenticateStoreMiddleware(storeHandler.GenerateQRCode))))
+	mux.HandleFunc("GET /store/generate-qrcode-pdf", middleware.WithCORS(middleware.WithSecurityHeaders(middleware.AuthenticateStoreMiddleware(storeHandler.GetQRCodePDF))))
+	mux.HandleFunc("DELETE /store/delete-menu-item/{id}", middleware.WithCORS(middleware.WithSecurityHeaders(middleware.AuthenticateStoreMiddleware(storeHandler.DeleteMenuItem))))
 
 	adminHandler := handlers.NewAdminHandler(service.NewAdminService(db))
+	//TODO protect
 	mux.HandleFunc("/admin/users", adminHandler.GetUsers)
 	fmt.Println("Listening on port ", os.Getenv("PORT"))
 

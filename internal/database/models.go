@@ -72,6 +72,13 @@ type Account struct {
 	UpdatedAt             time.Time
 }
 
+type ConfigOption struct {
+	ID            int64
+	MenuItemID    sql.NullInt64
+	MaxSelectable int32
+	Name          string
+}
+
 type Friendship struct {
 	ID            uuid.UUID
 	UserID        string
@@ -86,6 +93,27 @@ type Jwk struct {
 	CreatedAt  time.Time
 }
 
+type MenuItem struct {
+	ID      int64
+	StoreID sql.NullInt32
+	Name    string
+	Price   float64
+}
+
+type Option struct {
+	ID             int64
+	ConfigOptionID sql.NullInt64
+	Name           string
+	PriceDelta     float64
+}
+
+type QrCode struct {
+	ID      int64
+	StoreID sql.NullInt32
+	TableNo int32
+	Url     string
+}
+
 type Session struct {
 	ID             string
 	ExpiresAt      time.Time
@@ -96,6 +124,19 @@ type Session struct {
 	UserAgent      sql.NullString
 	UserId         string
 	ImpersonatedBy sql.NullString
+}
+
+type Store struct {
+	ID     int32
+	Name   string
+	Tables int32
+}
+
+type TwoFactor struct {
+	ID          string
+	Secret      string
+	BackupCodes string
+	UserId      string
 }
 
 type User struct {
@@ -112,6 +153,7 @@ type User struct {
 	BanExpires          sql.NullTime
 	PhoneNumber         sql.NullString
 	PhoneNumberVerified sql.NullBool
+	TwoFactorEnabled    sql.NullBool
 }
 
 type Verification struct {
